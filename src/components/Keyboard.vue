@@ -1,17 +1,11 @@
 <script setup lang="ts">
 import Button from '../elements/Button.vue';
+import { type IButton, EButtonType } from './Keyboard.types';
 
-enum Type { Digit = 'digit', Clear = 'clear', Enter = 'enter' };
-
-type Button = {
-  type: Type;
-  text: string;
-  value: number | string;
-}
 
 const values = [1, 2, 3, 4, 5, 6, 7, 8, 9, '<', 0, '='];
-const buttons: Button[] = values.map(value => ({
-  type: value === '<' ? Type.Clear : value === '=' ? Type.Enter : Type.Digit,
+const buttons: IButton[] = values.map(value => ({
+  type: value === '<' ? EButtonType.Clear : value === '=' ? EButtonType.Enter : EButtonType.Digit,
   text: value.toString(),
   value,
 }));
@@ -24,7 +18,7 @@ const emit = defineEmits(['button-clicked']);
     <Button
       v-for="button in buttons"
       :key="button.value"
-      :accent="button.type !== Type.Digit"
+      :accent="button.type !== EButtonType.Digit"
       @click="emit('button-clicked', button)"
     >
       {{ button.text }}

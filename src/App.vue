@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import Keyboard from './components/Keyboard.vue';
-import { type IButton, EButtonType } from './components/Keyboard.types';
+import { type IButton, EButtonType } from './components/Keyboard.d';
+import { EOperation } from './App.d';
 
 const getRandomInt = (min: number = 1, max: number = 9) => {
   min = Math.ceil(min);
@@ -9,26 +10,19 @@ const getRandomInt = (min: number = 1, max: number = 9) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-enum Operation {
-  Add = '+',
-  Subtract = '-',
-  Multiply = 'x',
-  Divide = ':',
-}
-
 const a = ref(getRandomInt());
 const b = ref(getRandomInt());
-const operation = ref(Operation.Multiply);
+const operation = ref(EOperation.Multiply);
 
 const correctAnswer = computed(() => {
   switch (operation.value) {
-    case Operation.Add:
+    case EOperation.Add:
       return a.value + b.value;
-    case Operation.Subtract:
+    case EOperation.Subtract:
       return a.value - b.value;
-    case Operation.Multiply:
+    case EOperation.Multiply:
       return a.value * b.value;
-    case Operation.Divide:
+    case EOperation.Divide:
       return a.value / b.value;
   }
 });
@@ -40,7 +34,7 @@ const checkAnswer = () => {
     alert('Правильно!');
     a.value = getRandomInt();
     b.value = getRandomInt();
-    operation.value = Operation.Multiply;
+    operation.value = EOperation.Multiply;
   } else {
     alert('Неправильно!');
   }

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Button from '../elements/Button.vue';
-import { type IButton, EButtonType } from './Keyboard.types';
-
+import { type IButton, EButtonType } from './Keyboard.d';
 
 const values = [1, 2, 3, 4, 5, 6, 7, 8, 9, '<', 0, '='];
 const buttons: IButton[] = values.map(value => ({

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import Keyboard from './components/Keyboard.vue';
 import { type IButton, EButtonType } from './components/Keyboard.d';
 import { EOperation } from './App.d';
 
-const ANSWER_DELAY = 750;
+const ANSWER_DELAY = 500;
 
 const getRandomInt = (min: number = 1, max: number = 9) => {
   min = Math.ceil(min);
@@ -32,14 +32,24 @@ const correctAnswer = computed(() => {
 const answer = ref('');
 const isCorrect = ref<boolean | null>(null);
 
+const streak = ref(0);
+const maxStreak = ref(Number(localStorage.getItem('maxStreak')) || 0);
+watch(streak, () => {
+  if (streak.value <= maxStreak.value) return;
+  maxStreak.value = streak.value;
+  localStorage.setItem('maxStreak', maxStreak.value.toString());
+});
+
 const checkAnswer = async () => {
   isCorrect.value = parseInt(answer.value) === correctAnswer.value;
   if (isCorrect.value) {
+    streak.value++;
     await new Promise(resolve => setTimeout(resolve, ANSWER_DELAY));
     alert('Правильно!');
     a.value = getRandomInt();
     b.value = getRandomInt();
   } else {
+    streak.value = 0;
     await new Promise(resolve => setTimeout(resolve, ANSWER_DELAY));
     alert('Неправильно! Попробуй ещё раз!');
   }
@@ -64,6 +74,10 @@ const handleButtonClick = (button: IButton) => {
       {{ a }} {{ operation }} {{ b }} = {{ answer }}
     </div>
     <Keyboard @buttonClicked = "handleButtonClick" />
+    <div class="streak">
+      <div title="Правильных ответов подряд">🔥{{ streak }}</div>
+      <div title="Рекорд">🏅{{ maxStreak }}</div>
+    </div>
   </div>
 </template>
 
@@ -83,6 +97,12 @@ const handleButtonClick = (button: IButton) => {
     &.error {
       color: red;
     }
+  }
+
+  .streak {
+    display: flex;
+    gap: 16px;
+    font-size: 48px;
   }
 }
 </style>

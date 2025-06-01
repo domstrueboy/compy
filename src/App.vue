@@ -4,6 +4,8 @@ import Keyboard from './components/Keyboard.vue';
 import { type IButton, EButtonType } from './components/Keyboard.d';
 import { EOperation } from './App.d';
 
+const ANSWER_DELAY = 750;
+
 const getRandomInt = (min: number = 1, max: number = 9) => {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -28,17 +30,21 @@ const correctAnswer = computed(() => {
 });
 
 const answer = ref('');
+const isCorrect = ref<boolean | null>(null);
 
-const checkAnswer = () => {
-  if (parseInt(answer.value) === correctAnswer.value) {
+const checkAnswer = async () => {
+  isCorrect.value = parseInt(answer.value) === correctAnswer.value;
+  if (isCorrect.value) {
+    await new Promise(resolve => setTimeout(resolve, ANSWER_DELAY));
     alert('Правильно!');
     a.value = getRandomInt();
     b.value = getRandomInt();
-    operation.value = EOperation.Multiply;
   } else {
-    alert('Неправильно!');
+    await new Promise(resolve => setTimeout(resolve, ANSWER_DELAY));
+    alert('Неправильно! Попробуй ещё раз!');
   }
   answer.value = '';
+  isCorrect.value = null;
 }
 
 const handleButtonClick = (button: IButton) => {
@@ -54,7 +60,7 @@ const handleButtonClick = (button: IButton) => {
 
 <template>
   <div class="container">
-    <div class="equation">
+    <div :class="['equation', { correct: isCorrect === true, error: isCorrect === false }]">
       {{ a }} {{ operation }} {{ b }} = {{ answer }}
     </div>
     <Keyboard @buttonClicked = "handleButtonClick" />
@@ -71,6 +77,12 @@ const handleButtonClick = (button: IButton) => {
 
   .equation {
     font-size: 64px;
+    &.correct {
+      color: lightgreen;
+    }
+    &.error {
+      color: red;
+    }
   }
 }
 </style>

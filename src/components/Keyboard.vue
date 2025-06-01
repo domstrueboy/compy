@@ -9,6 +9,16 @@ const buttons: IButton[] = values.map(value => ({
   value,
 }));
 
+const getButtonType = (type: EButtonType) => {
+  if (type === EButtonType.Enter) {
+    return 'accent';
+  }
+  if (type === EButtonType.Clear) {
+    return 'danger';
+  }
+  return 'default';
+};
+
 const emit = defineEmits(['button-clicked']);
 </script>
 
@@ -17,7 +27,7 @@ const emit = defineEmits(['button-clicked']);
     <Button
       v-for="button in buttons"
       :key="button.value"
-      :accent="button.type !== EButtonType.Digit"
+      :type="getButtonType(button.type)"
       @click="emit('button-clicked', button)"
     >
       {{ button.text }}

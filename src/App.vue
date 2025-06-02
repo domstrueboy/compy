@@ -4,7 +4,7 @@ import Keyboard from './components/Keyboard.vue';
 import { type IButton, EButtonType } from './components/Keyboard.d';
 import { EOperation } from './App.d';
 
-const ANSWER_DELAY = 500;
+const ANSWER_DELAY = 1000;
 
 const getRandomInt = (min: number = 1, max: number = 9) => {
   min = Math.ceil(min);
@@ -45,13 +45,11 @@ const checkAnswer = async () => {
   if (isCorrect.value) {
     streak.value++;
     await new Promise(resolve => setTimeout(resolve, ANSWER_DELAY));
-    alert('Правильно!');
     a.value = getRandomInt();
     b.value = getRandomInt();
   } else {
     streak.value = 0;
     await new Promise(resolve => setTimeout(resolve, ANSWER_DELAY));
-    alert('Неправильно! Попробуй ещё раз!');
   }
   answer.value = '';
   isCorrect.value = null;
@@ -70,14 +68,32 @@ const handleButtonClick = (button: IButton) => {
 
 <template>
   <div class="container">
+
     <div :class="['equation', { correct: isCorrect === true, error: isCorrect === false }]">
       {{ a }} {{ operation }} {{ b }} = {{ answer }}
     </div>
-    <Keyboard @buttonClicked = "handleButtonClick" />
-    <div class="streak">
-      <div title="Правильных ответов подряд">🔥{{ streak }}</div>
-      <div title="Рекорд">🏅{{ maxStreak }}</div>
+
+    <div class="message">
+      <div v-if="isCorrect === true" class="correct">Правильно!</div>
+      <div v-else-if="isCorrect === false" class="error">Неправильно! Попробуй ещё раз!</div>
     </div>
+
+    <Keyboard @buttonClicked = "handleButtonClick" />
+
+    <div class="streak-wrapper">
+      <div title="Правильных ответов подряд" class="streak">
+        <span>🔥</span>
+        <span>{{ streak }}</span>
+        <span class="streak-title">подряд</span>
+      </div>
+      
+      <div title="Рекорд" class="streak">
+        <span>🏅</span>
+        <span>{{ maxStreak }}</span>
+        <span class="streak-title">рекорд</span>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -87,10 +103,10 @@ const handleButtonClick = (button: IButton) => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 36px;
 
   .equation {
     font-size: 64px;
+
     &.correct {
       color: lightgreen;
     }
@@ -99,10 +115,38 @@ const handleButtonClick = (button: IButton) => {
     }
   }
 
-  .streak {
+  .message {
+    height: 16px;
+    font-size: 16px;
+    margin-bottom: 16px;
+
+    .correct {
+      color: lightgreen;
+    }
+    .error {
+      color: red;
+    }
+  }
+
+  .streak-wrapper {
+    margin-top: 24px;
     display: flex;
+    justify-content: space-between;
     gap: 16px;
+    width: 100%;
     font-size: 48px;
+
+    .streak {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: flex-end;
+
+      .streak-title {
+        font-size: 16px;
+        margin-left: 4px;
+        margin-bottom: 4px;
+      }
+    }
   }
 }
 </style>

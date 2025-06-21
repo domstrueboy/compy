@@ -3,6 +3,11 @@ import { ref, computed, watch } from 'vue';
 import Keyboard from './components/Keyboard.vue';
 import { type IButton, EButtonType } from './components/Keyboard.d';
 import { EOperation } from './App.d';
+import { multiply } from '../wasm/pkg/wasm.d';
+
+type TMultiply = typeof multiply;
+let wasm: { multiply: TMultiply };
+import("../wasm/pkg/wasm.js").then(lib => wasm = lib).catch((err) => console.error(err));
 
 const ANSWER_DELAY = 1000;
 
@@ -23,7 +28,7 @@ const correctAnswer = computed(() => {
     case EOperation.Subtract:
       return a.value - b.value;
     case EOperation.Multiply:
-      return a.value * b.value;
+      return wasm.multiply(a.value, b.value);
     case EOperation.Divide:
       return a.value / b.value;
   }
